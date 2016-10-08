@@ -1,7 +1,7 @@
 #include "Iot.h"
 //#include <ArduinoJson.h>
 
-int parseJson(char* recvmsg,cJSON * pJson, int iCnt);
+int parseJson(char* recvmsg,cJSON * pJson, int iCnt, int size);
 void printntab(int iCnt);
 
 Iot::Iot(Client *client, const char *server, uint16_t port,const char *cid, const char *user, const char *pass){
@@ -16,6 +16,8 @@ Iot::Iot(Client *client, const char *server, uint16_t port,const char *cid, cons
     memset(_pubtopic3,0,sizeof(_pubtopic3));
     memset(_pubtopic4,0,sizeof(_pubtopic4));
     root = cJSON_CreateObject(); 
+	
+	_size = 100;
 }
 
 Iot::~Iot(){
@@ -201,7 +203,12 @@ bool Iot::parsejs(char* data){
   return true;
 }
 
-bool Iot::readAll(char* recvmsg,char *data){
+bool Iot::readAll(char* recvmsg,char *data,int size){
+	if(size <= _size)
+		_size = size;
+	else
+		_size = 100;
+	
   cJSON* parsing = cJSON_Parse(data);
     if(NULL == parsing)
     {
@@ -209,7 +216,7 @@ bool Iot::readAll(char* recvmsg,char *data){
       return false;
     }
     int iCnt = 0;
-   parseJson(recvmsg,parsing, iCnt);
+   parseJson(recvmsg,parsing, iCnt,_size);
    cJSON_Delete(parsing);
    return true;  
 }
@@ -265,7 +272,7 @@ double Iot::readDouble(char* key){
   return back;
 }
 
-int parseJson(char* recvmsg,cJSON * parsing, int iCnt)
+int parseJson(char* recvmsg,cJSON * parsing, int iCnt, int size)
 {
     if(NULL == parsing)
     {
@@ -294,14 +301,14 @@ int parseJson(char* recvmsg,cJSON * parsing, int iCnt)
                 //Serial.printf("%s : %d\n", parsing->string, parsing->valueint);
                 char str[20]={0};
                 ftoa(str, parsing->valuedouble, 2); 
-                sprintf(recvmsg,"%s:%d(int)|%s(double)\n",parsing->string, parsing->valueint, str);
+                snprintf(recvmsg,(size-strlen(recvmsg)),"%s:%d(int)|%s(double)\n",parsing->string, parsing->valueint, str);
                 //Serial.printf("strlenint=%d,msg=%s\n",strlen(recvmsg),recvmsg);
             }
             break;
         case cJSON_String :
             {
                 //Serial.printf("%s : %s\n", parsing->string, parsing->valuestring);
-                sprintf(recvmsg,"%s:%s(string)\n",parsing->string, parsing->valuestring);
+                snprintf(recvmsg,(size-strlen(recvmsg)),"%s:%s(string)\n",parsing->string, parsing->valuestring);
                 //Serial.printf("strlenstring=%d,msg=%s\n",strlen(recvmsg),recvmsg);
             }
             break;
@@ -317,7 +324,7 @@ int parseJson(char* recvmsg,cJSON * parsing, int iCnt)
                 {
                     printntab(iCnt);
                     cJSON * pSub = cJSON_GetArrayItem(parsing, i);
-                    parseJson(recvmsg+strlen(recvmsg),pSub, iCnt);
+                    parseJson(recvmsg+strlen(recvmsg),pSub, iCnt, size);
                 }
                 printntab(iCnt);
                 //Serial.printf("}\n");

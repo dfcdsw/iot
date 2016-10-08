@@ -27,7 +27,7 @@ void subcallback(char *data, uint16_t len) {
   char recvmsg[100]={0};
   if(iot.parsejs(data))Serial.printf("parse ok\n");
   else return;
-  if(iot.readAll(recvmsg,data))//If you do not know what msg about,use readAll to find msg
+  if(iot.readAll(recvmsg,data,100))//If you do not know what msg about,use readAll to find msg
     Serial.printf("recvmsg = %s\n",recvmsg);
 
   int temp = iot.readInt("temp");Serial.printf("readInt temp = %d\n",temp);

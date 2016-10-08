@@ -30,7 +30,7 @@ public:
   bool setcallback(char* topicname,SubscribeCallbackBufferType callb);
 
   bool parsejs(char* data);
-  bool readAll(char* recvmsg,char *data);
+  bool readAll(char* recvmsg,char *data,int size);
   int readInt(char* key);
   String readstring(char* key);
   double readDouble(char* key);
@@ -39,6 +39,9 @@ private:
   char* pJSON;
   cJSON* parse;
   cJSON* root;
+  
+  int _size;
+  
   char _subtopic1[20];
   char _subtopic2[20];
   char _subtopic3[20];
