@@ -57,6 +57,5 @@ class MQTT_Client : public MQTT {
   Client* client;
 };
 
-#define DBG(...) Serial.printf(" DBG(%s, %s(), %d): ", __FILE__, __FUNCTION__, __LINE__); Serial.printf(__VA_ARGS__)
 
 #endif

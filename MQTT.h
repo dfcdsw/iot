@@ -34,6 +34,16 @@
 #define MQTT_VERSION_MINOR 16
 #define MQTT_VERSION_PATCH 0
 
+
+/***2016-9-27 jh_debug***/
+//#define DBG_DEBUG
+#ifdef DBG_DEBUG
+#define DBG(...) Serial.printf(" DBG(%s, %s(), %d): ", __FILE__, __FUNCTION__, __LINE__); Serial.printf(__VA_ARGS__)
+#else
+#define DBG(...) {}	
+#endif
+
+
 // Uncomment/comment to turn on/off debug output messages.
 //#define MQTT_DEBUG
 // Uncomment/comment to turn on/off error output messages.

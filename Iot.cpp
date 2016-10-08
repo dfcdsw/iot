@@ -39,7 +39,7 @@ void Iot::writeDouble(const char* dataID,float value){
   cJSON_AddNumberToObject(root,dataID,value);
 }
 
-int Iot::subscribe(const char* subtopic){
+bool Iot::subscribe(const char* subtopic){
   if(strlen(_subtopic1) == 0){
     strcpy(_subtopic1,subtopic);
     sensorSub1 = new MQTT_Subscribe(Iotclient, _subtopic1,0); 
@@ -57,12 +57,12 @@ int Iot::subscribe(const char* subtopic){
     sensorSub4 = new MQTT_Subscribe(Iotclient, _subtopic4,0);
     Iotclient->subscribe(sensorSub4);   
   }else{
-    return -1;  
+    return false;  
   }
-  return 0; 
+  return true; 
 }
 
-int Iot::publish(const char* pubtopic){
+bool Iot::publish(const char* pubtopic){
    if(strlen(_pubtopic1) == 0){
     strcpy(_pubtopic1,pubtopic);
     sensorPub1 = new MQTT_Publish(Iotclient, _pubtopic1,0); 
@@ -76,16 +76,16 @@ int Iot::publish(const char* pubtopic){
     strcpy(_pubtopic4,pubtopic);
     sensorPub4 = new MQTT_Publish(Iotclient, _pubtopic4,0);  
   }else{
-    return -1;  
+    return false;  
   }
-  return 0;
+  return true;
 }
 
-int Iot::connected(){
+bool Iot::connected(){
   if (Iotclient->connected()) {
-    return 0;
+    return true;
   }else{
-    return -1;  
+    return false;  
   }
 }
 
@@ -108,13 +108,13 @@ void Iot::connect(){
   Serial.println("MQTT Connected!");
 }
 
-int Iot::flush(char* topicname){
+bool Iot::flush(char* topicname){
   pJSON = cJSON_PrintUnformatted(root);
   if(pJSON){
     DBG("create js string is %s\n",pJSON);
     Serial.printf("pub msg is:%s\n",pJSON);
   }else{
-    return -1;  
+    return false;  
   }
   if(!strcmp(_pubtopic1,topicname)){
     if (! sensorPub1->publish(pJSON)) {
@@ -122,7 +122,7 @@ int Iot::flush(char* topicname){
       cJSON_Delete(root);
       memset(pJSON,0,strlen(pJSON));
       root = cJSON_CreateObject();
-      return -1;
+      return false;
     } else {
       //Serial.println(F("OK!"));
     }
@@ -132,7 +132,7 @@ int Iot::flush(char* topicname){
       cJSON_Delete(root);
       memset(pJSON,0,strlen(pJSON));
       root = cJSON_CreateObject();
-      return -1;
+      return false;
     } else {
       //Serial.println(F("OK!"));
     }
@@ -142,7 +142,7 @@ int Iot::flush(char* topicname){
       cJSON_Delete(root);
       memset(pJSON,0,strlen(pJSON));
       root = cJSON_CreateObject();
-      return -1;
+      return false;
     } else {
       //Serial.println(F("OK!"));
     }
@@ -152,7 +152,7 @@ int Iot::flush(char* topicname){
       cJSON_Delete(root);
       memset(pJSON,0,strlen(pJSON));
       root = cJSON_CreateObject();
-      return -1;
+      return false;
     } else {
       //Serial.println(F("OK!"));
     }
@@ -160,20 +160,20 @@ int Iot::flush(char* topicname){
     cJSON_Delete(root);
     memset(pJSON,0,strlen(pJSON));
     root = cJSON_CreateObject();
-    return -1;  
+    return false;  
   }
    
   cJSON_Delete(root);
   memset(pJSON,0,strlen(pJSON));
   root = cJSON_CreateObject();
-  return 0;
+  return true;
 }
 
 void Iot::available(int16_t timeout){
   Iotclient->processPackets(timeout);
 }
 
-int Iot::setcallback(char* topicname,SubscribeCallbackBufferType callb){
+bool Iot::setcallback(char* topicname,SubscribeCallbackBufferType callb){
   if(!strcmp(_subtopic1,topicname)){
     sensorSub1->setCallback(callb);  
   }else if(!strcmp(_subtopic2,topicname)){
@@ -183,12 +183,12 @@ int Iot::setcallback(char* topicname,SubscribeCallbackBufferType callb){
   }else if(!strcmp(_subtopic4,topicname)){
     sensorSub4->setCallback(callb);
   }else{
-    return -1;  
+    return false;  
   }
-  return 0;
+  return true;
 }
 
-int Iot::parsejs(char* data){
+bool Iot::parsejs(char* data){
   if(NULL != parse){
     cJSON_Delete(parse);  
   }
@@ -196,22 +196,22 @@ int Iot::parsejs(char* data){
   if(NULL == parse)
   {
     DBG("parse err\n");
-    return -1;
+    return false;
   }
-  return 0;
+  return true;
 }
 
-int Iot::readAll(char* recvmsg,char *data){
+bool Iot::readAll(char* recvmsg,char *data){
   cJSON* parsing = cJSON_Parse(data);
     if(NULL == parsing)
     {
       DBG("parse err\n");
-      return -1;
+      return false;
     }
     int iCnt = 0;
    parseJson(recvmsg,parsing, iCnt);
    cJSON_Delete(parsing);
-   return 0;  
+   return true;  
 }
 
 int Iot::readInt(char* key){
@@ -244,7 +244,7 @@ String Iot::readstring(char* key){
   //Serial.printf("key type is %d\n",temp->type);
   //Serial.printf("key is %s\n",temp->valuestring);
   DBG("key type is %d\n",temp->type);
-  DBG("key is %d\n",temp->valueint);
+  DBG("key is %s\n",temp->valuestring);
   err = temp->valuestring;
   return err;
 }

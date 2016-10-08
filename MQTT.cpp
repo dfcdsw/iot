@@ -148,19 +148,15 @@ MQTT::MQTT(const char *server,
 
 int8_t MQTT::connect() {
   // Connect to the server.
-  Serial.printf("2222\n");
   if (!connectServer()){
-    Serial.printf("9999\n");
 	return -1;
   }
-  Serial.printf("\n7777\n");
+
   // Construct and send connect packet.
   uint8_t len = connectPacket(buffer);
   if (!sendPacket(buffer, len)){
-    Serial.printf("8888\n");
 	return -1;
   }
-Serial.printf("3333\n");
   // Read connect response packet and verify it
   len = readFullPacket(buffer, MAXBUFFERSIZE, CONNECT_TIMEOUT_MS);
   if (len != 4)
@@ -169,22 +165,16 @@ Serial.printf("3333\n");
     return -1;
   if (buffer[3] != 0)
     return buffer[3];
-Serial.printf("4444\n");
   // Setup subscriptions once connected.
   for (uint8_t i=0; i<MAXSUBSCRIPTIONS; i++) {
     // Ignore subscriptions that aren't defined.
-	Serial.printf("1.");
     if (subscriptions[i] == 0) continue;
-	Serial.printf("2.");
     boolean success = false;
     for (uint8_t retry=0; (retry<3) && !success; retry++) { // retry until we get a suback    
       // Construct and send subscription packet.
-	  Serial.printf("3.");
       uint8_t len = subscribePacket(buffer, subscriptions[i]->topic, subscriptions[i]->qos);
-	  Serial.printf("4.");
       if (!sendPacket(buffer, len))
 		return -1;
-Serial.printf("5555\n");
       if(MQTT_PROTOCOL_LEVEL < 3) // older versions didn't suback
 		break;
 
@@ -201,7 +191,6 @@ Serial.printf("5555\n");
     }
     if (! success) return -2; // failed to sub for some reason
   }
-Serial.printf("****\n");
   return 0;
 }
 
@@ -309,7 +298,7 @@ bool MQTT::disconnect() {
 
 
 bool MQTT::publish(const char *topic, const char *data, uint8_t qos) {
-	Serial.printf("--11--topic=%s,data=%s,qos=%d\n",topic,data,qos);
+	Serial.printf("topic=%s,data=%s,qos=%d\n",topic,data,qos);
 	int len = strlen(data);
 	//uint8_t msg[200];//debug for $dp
 	//msg[0]=0x01;msg[1]=0x00;msg[2]=strlen(data);memcpy(&msg[3],data,len);//debug
@@ -318,11 +307,9 @@ bool MQTT::publish(const char *topic, const char *data, uint8_t qos) {
 
 bool MQTT::publish(const char *topic, uint8_t *data, uint16_t bLen, uint8_t qos) {
   // Construct and send publish packet.
- Serial.printf("--12--\n");
   uint16_t len = publishPacket(buffer, topic, data, bLen, qos);
   if (!sendPacket(buffer, len))
     return false;
-Serial.printf("--13--\n");
   // If QOS level is high enough verify the response packet.
   if (qos > 0) {
     len = readFullPacket(buffer, MAXBUFFERSIZE, PUBLISH_TIMEOUT_MS);

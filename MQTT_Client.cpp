@@ -26,9 +26,7 @@ bool MQTT_Client::connectServer() {
   // Grab server name from flash and copy to buffer for name resolution.
   DBG("\n");
   memset(buffer, 0, sizeof(buffer));
-  DBG("\n");
   strcpy((char *)buffer, servername);
-  DBG("\n");
   DEBUG_PRINT(F("Connecting to: ")); DEBUG_PRINTLN((char *)buffer);
   Serial.print("connecting to:");Serial.printf((char *)buffer);
   // Connect and check for success (0 result).

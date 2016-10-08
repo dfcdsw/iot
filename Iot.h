@@ -13,24 +13,24 @@ class Iot
 public:
   Iot(Client *client, const char *server, uint16_t port,const char *cid, const char *user, const char *pass);
   ~Iot();
-  int subscribe(const char* subtopic);
+  bool subscribe(const char* subtopic);
 
-  int publish(const char* pubtopic);
+  bool publish(const char* pubtopic);
 
   void connect();
-  int connected();
+  bool connected();
 
   void writeString(const char* dataID,const char* value);
   void writeInt(const char* dataID,int value);
   void writeDouble(const char* dataID,float value);
 
-  int flush(char* topicname);
+  bool flush(char* topicname);
 
   void available(int16_t timeout=500);
-  int setcallback(char* topicname,SubscribeCallbackBufferType callb);
+  bool setcallback(char* topicname,SubscribeCallbackBufferType callb);
 
-  int parsejs(char* data);
-  int readAll(char* recvmsg,char *data);
+  bool parsejs(char* data);
+  bool readAll(char* recvmsg,char *data);
   int readInt(char* key);
   String readstring(char* key);
   double readDouble(char* key);
