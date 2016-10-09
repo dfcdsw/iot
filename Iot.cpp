@@ -171,7 +171,7 @@ bool Iot::flush(char* topicname){
   return true;
 }
 
-void Iot::available(int16_t timeout){
+void Iot::loop(int16_t timeout){
   Iotclient->processPackets(timeout);
 }
 

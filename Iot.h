@@ -26,7 +26,7 @@ public:
 
   bool flush(char* topicname);
 
-  void available(int16_t timeout=500);
+  void loop(int16_t timeout=500);
   bool setcallback(char* topicname,SubscribeCallbackBufferType callb);
 
   bool parsejs(char* data);

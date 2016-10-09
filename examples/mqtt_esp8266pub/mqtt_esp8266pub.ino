@@ -37,16 +37,20 @@ void setup() {
   Serial.println();
 
   Serial.println("WiFi connected");
-  Serial.println("IP address: "); Serial.println(WiFi.localIP());
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
   
   
-  if(iot.publish("temp"))Serial.printf("set publish topic ok!\n");
+  if(iot.publish("temp"))
+    Serial.printf("set publish topic ok!\n");
 }
 int x=0;
 void loop() {
 
-  if(iot.connected())Serial.printf("already connected!\n");
-  else iot.connect(); 
+  if(iot.connected())
+    Serial.printf("already connected!\n");
+  else
+    iot.connect(); 
 
   
   iot.writeInt("temp",x);
@@ -54,7 +58,8 @@ void loop() {
   double test = 21.51;
   iot.writeDouble("change",test);
   x++;
-  if(iot.flush("temp"))Serial.printf("Pub OK!\n");
+  if(iot.flush("temp"))
+    Serial.printf("Pub OK!\n");
   delay(2000);
 }
 

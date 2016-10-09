@@ -30,9 +30,12 @@ void subcallback(char *data, uint16_t len) {
   if(iot.readAll(recvmsg,data,100))//If you do not know what msg about,use readAll to find msg
     Serial.printf("recvmsg = %s\n",recvmsg);
 
-  int temp = iot.readInt("temp");Serial.printf("readInt temp = %d\n",temp);
-  String onoff = iot.readstring("onoff");Serial.printf("readstring onoff = %s\n",onoff.c_str());
-  double change = iot.readDouble("change");Serial.print("readDouble change =");Serial.println(change);
+  int temp = iot.readInt("temp");
+  Serial.printf("readInt temp = %d\n",temp);
+  String onoff = iot.readstring("onoff");
+  Serial.printf("readstring onoff = %s\n",onoff.c_str());
+  double change = iot.readDouble("change");
+  Serial.print("readDouble change =");Serial.println(change);
 }
 
 void setup() {
@@ -52,21 +55,27 @@ void setup() {
   Serial.println();
 
   Serial.println("WiFi connected");
-  Serial.println("IP address: "); Serial.println(WiFi.localIP());
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
   
-  if(iot.subscribe("temp"))Serial.printf("setSubscribe OK!\n");
-  if(iot.subscribe("$creq"))Serial.printf("setSubscribe OK!\n");
+  if(iot.subscribe("temp"))
+    Serial.printf("setSubscribe OK!\n");
+  if(iot.subscribe("$creq"))
+    Serial.printf("setSubscribe OK!\n");
   
   
-  if(iot.setcallback("temp",subcallback))Serial.printf("set callbakc OK!\n");
+  if(iot.setcallback("temp",subcallback))
+    Serial.printf("set callbakc OK!\n");
  
 }
 
 void loop() {
-    if(iot.connected())Serial.printf("already connected!\n");
-    else iot.connect();  
+  if(iot.connected())
+    Serial.printf("already connected!\n");
+  else
+    iot.connect();  
     
-    iot.available(1000);//You can ste timeout
+    iot.loop(1000);//You can ste timeout
 
     delay(300);
 }
